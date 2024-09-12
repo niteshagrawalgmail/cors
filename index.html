@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CORS Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        #status {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>CORS Test Page</h1>
+    <p>This page will test CORS by attempting to fetch data from another domain.</p>
+    
+    <button id="test-cors">Test CORS</button>
+    
+    <div id="status"></div>
+
+    <script>
+        document.getElementById('test-cors').addEventListener('click', function() {
+            const statusDiv = document.getElementById('status');
+            statusDiv.textContent = 'Testing CORS...';
+
+            // Fetch request to a different origin (use a sample CORS-enabled API endpoint)
+            fetch('https://jsonplaceholder.typicode.com/posts/1', {
+                method: 'GET'
+            })
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    throw new Error('CORS request failed');
+                }
+            })
+            .then(data => {
+                statusDiv.textContent = 'CORS success: Data received - ' + JSON.stringify(data);
+            })
+            .catch(error => {
+                statusDiv.textContent = 'CORS failed: ' + error.message;
+            });
+        });
+    </script>
+</body>
+</html>
