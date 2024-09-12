@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CORS Test</title>
+    <title>CORS Test with Basic Auth</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -11,38 +11,70 @@
         }
         #status {
             margin-top: 20px;
+            color: blue;
+        }
+        input, button {
+            margin: 10px 0;
         }
     </style>
 </head>
 <body>
     <h1>CORS Test Page</h1>
-    <p>This page will test CORS by attempting to fetch data from another domain.</p>
+    <p>This page will test CORS with Basic Authentication by attempting to fetch data from a user-provided domain or URL.</p>
     
-    <button id="test-cors">Test CORS</button>
+    <label for="url-input">Enter a URL:</label>
+    <input type="text" id="url-input" placeholder="https://example.com/api" size="50"><br>
+
+    <label for="username-input">Username:</label>
+    <input type="text" id="username-input" placeholder="Username"><br>
+
+    <label for="password-input">Password:</label>
+    <input type="password" id="password-input" placeholder="Password"><br>
+
+    <button id="test-cors">Test CORS with Basic Auth</button>
     
     <div id="status"></div>
 
     <script>
         document.getElementById('test-cors').addEventListener('click', function() {
+            const url = document.getElementById('url-input').value;
+            const username = document.getElementById('username-input').value;
+            const password = document.getElementById('password-input').value;
             const statusDiv = document.getElementById('status');
-            statusDiv.textContent = 'Testing CORS...';
 
-            // Fetch request to a different origin (use a sample CORS-enabled API endpoint)
-            fetch('https://jsonplaceholder.typicode.com/posts/1', {
-                method: 'GET'
+            if (!url || !username || !password) {
+                statusDiv.textContent = 'Please enter a valid URL, username, and password.';
+                statusDiv.style.color = 'red';
+                return;
+            }
+
+            statusDiv.textContent = 'Testing CORS with Basic Auth...';
+            statusDiv.style.color = 'blue';
+
+            // Encode the username and password in Base64
+            const credentials = btoa(`${username}:${password}`);
+
+            // Fetch request with Basic Authorization header
+            fetch(url, {
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Basic ' + credentials
+                }
             })
             .then(response => {
                 if (response.ok) {
                     return response.json();
                 } else {
-                    throw new Error('CORS request failed');
+                    throw new Error('CORS request failed: ' + response.statusText);
                 }
             })
             .then(data => {
                 statusDiv.textContent = 'CORS success: Data received - ' + JSON.stringify(data);
+                statusDiv.style.color = 'green';
             })
             .catch(error => {
                 statusDiv.textContent = 'CORS failed: ' + error.message;
+                statusDiv.style.color = 'red';
             });
         });
     </script>
